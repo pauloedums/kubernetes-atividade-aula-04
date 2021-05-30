@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+  namespace: atividade-aula-04
+data:
+  TZ: "America/Sao_Paulo"

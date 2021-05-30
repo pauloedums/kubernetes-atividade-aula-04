@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-configmap
+  namespace: atividade-aula-04
+data:
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: atividade04infra
+  MYSQL_TCP_PORT: "3306"

@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: mysqldb-stfs
+  name: mysqldb-stfs
+  namespace: atividade-aula-04
+spec:
+  selector:
+    matchLabels:
+      app: mysqldb-stfs
+  serviceName: "mysqldb-stfs"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysqldb-stfs
+    spec:
+      terminationGracePeriodSeconds: 20
+      containers:
+      - env:
+        - name: MYSQL_DATABASE
+          valueFrom: 
+            configMapKeyRef:
+              name: db-configmap
+              key: MYSQL_DATABASE
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom: 
+            configMapKeyRef:
+              name: db-configmap
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_TCP_PORT
+          valueFrom: 
+            configMapKeyRef:
+              name: db-configmap
+              key: MYSQL_TCP_PORT
+        - name: TZ
+          valueFrom: 
+            configMapKeyRef:
+              name: app-configmap
+              key: TZ
+        image: mysql:8.0
+        imagePullPolicy: Always
+        name: mysqldb-stfs
+        ports:
+          - containerPort: 3306
+        readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 5
+            periodSeconds: 5
+        livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 10
+            periodSeconds: 20
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: db-claim
+  volumeClaimTemplates:
+  - metadata:
+      name: db-claim
+      namespace: atividade-aula-04
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "default"
+      resources:
+        requests:
+          storage: 10Gi
